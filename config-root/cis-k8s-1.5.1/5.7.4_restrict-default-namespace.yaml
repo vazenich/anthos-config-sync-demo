@@ -12,20 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-apiVersion: config.gatekeeper.sh/v1alpha1
-kind: Config
-metadata:
-  name: config
-  namespace: "gatekeeper-system"
+apiVersion: constraints.gatekeeper.sh/v1beta1
+kind: K8sRestrictNamespaces
+metadata: # kpt-merge: /restrict-default-namespace
+  name: restrict-default-namespace
+  annotations:
+    # This constraint is not certified by CIS.
+    description: "Restricts resources from using the `default` namespace."
 spec:
-  match:
-    - excludedNamespaces: [
-        "kube-system",
-        "kube-public",
-        "kube-node-lease",
-        "config-management-system",
-        "config-management-monitoring",
-        "gatekeeper-system",
-        "resource-group-system"
-      ]
-      processes: ["audit"]
+  enforcementAction: dryrun # kpt-set: ${enforcementAction}
+  parameters:
+    restrictedNamespaces:
+    - default
